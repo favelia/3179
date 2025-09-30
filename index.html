@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Malaysia Poverty Map by States</title>
+  <!-- Import Vega & Vega-Lite -->
+  <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.1.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.17.0"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    #map {
+      width: 900px;
+      height: 650px;
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Malaysia Poverty Rate by State (2022)</h2>
+<div id="map"></div>
+
+<script type="text/javascript">
+  const spec = {
+    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+    "width": 800,
+    "height": 600,
+    "title": "Poverty Rate by State in Malaysia (2022)",
+    "projection": {"type": "mercator"},
+    "layer": [
+      {
+        "data": {
+          "url": "https://raw.githubusercontent.com/favelia/3179/main/geoBoundaries-MYS-ADM1.json",
+          "format": {"type": "topojson", "feature": "geoBoundaries-MYS-ADM1"}
+        },
+        "transform": [
+          {
+            "lookup": "properties.shapeName",
+            "from": {
+              "data": {
+                "url": "https://raw.githubusercontent.com/favelia/3179/main/hies_state.csv"
+              },
+              "key": "state",
+              "fields": ["poverty", "income_mean", "income_median"]
+            }
+          }
+        ],
+        "mark": {"type": "geoshape", "stroke": "white"},
+        "encoding": {
+          "color": {
+            "field": "poverty",
+            "type": "quantitative",
+            "title": "Poverty Rate (%)",
+            "scale": {"scheme": "oranges"}
+          },
+          "tooltip": [
+            {"field": "properties.shapeName", "type": "nominal", "title": "State"},
+            {"field": "poverty", "type": "quantitative"},
+            {"field": "income_mean", "type": "quantitative"},
+            {"field": "income_median", "type": "quantitative"}
+          ]
+        }
+      },
+      {
+        "data": {
+          "url": "https://raw.githubusercontent.com/favelia/3179/main/geoBoundaries-MYS-ADM1.json",
+          "format": {"type": "topojson", "feature": "geoBoundaries-MYS-ADM1"}
+        },
+        "mark": {"type": "geoshape", "fill": "transparent", "stroke": "black"}
+      }
+    ]
+  };
+
+  vegaEmbed('#map', spec).then(function(result) {
+    // Access the Vega view instance if needed
+  }).catch(console.error);
+</script>
+
+</body>
+</html>
